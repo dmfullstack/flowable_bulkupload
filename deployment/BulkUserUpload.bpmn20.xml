@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="bulkuserupload" name="BulkUserUpload" isExecutable="true">
+    <documentation>Bulk User Upload</documentation>
+    <startEvent id="start" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="manual" name="Create Record" flowable:assignee="$INITIATOR" flowable:formKey="bulkuploadform1" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="start" targetRef="manual"></sequenceFlow>
+    <scriptTask id="step1" name="Step1" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <script><![CDATA[System.out.println("@@@@@@STEP1 START");]]></script>
+    </scriptTask>
+    <sequenceFlow id="flow2" name="Flow2" sourceRef="manual" targetRef="step1"></sequenceFlow>
+    <scriptTask id="sid-314E1402-CDEF-4541-AF91-90DBB7368DC5" name="Step2
+" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <script><![CDATA[System.out.println("@@@@@@STEP2 COMPLETE");]]></script>
+    </scriptTask>
+    <intermediateCatchEvent id="timer1" name="timer1">
+      <timerEventDefinition>
+        <timeDuration>PT5S</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-91982CFD-1E99-4F16-A6EE-3882FB976757" sourceRef="step1" targetRef="timer1"></sequenceFlow>
+    <sequenceFlow id="sid-942CD091-5BE5-425B-BB7F-82C54F576B7B" sourceRef="timer1" targetRef="sid-314E1402-CDEF-4541-AF91-90DBB7368DC5"></sequenceFlow>
+    <parallelGateway id="parallel1"></parallelGateway>
+    <scriptTask id="pstep1" name="PARALLEL STEP1
+" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <script><![CDATA[System.out.println("@@@@@PARALLEL 1 STEP");]]></script>
+    </scriptTask>
+    <scriptTask id="pstep2" name="PARALLEL STEP2
+" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <script><![CDATA[System.out.println("@@@@@PARALLEL 2 STEP");]]></script>
+    </scriptTask>
+    <sequenceFlow id="fromstep1" sourceRef="sid-314E1402-CDEF-4541-AF91-90DBB7368DC5" targetRef="parallel1"></sequenceFlow>
+    <sequenceFlow id="fromparallel1" sourceRef="parallel1" targetRef="pstep1"></sequenceFlow>
+    <sequenceFlow id="fromparallel2" sourceRef="parallel1" targetRef="pstep2"></sequenceFlow>
+    <scriptTask id="cstep3" name="Combine step3
+" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <script><![CDATA[System.out.println("@@@@@Combined Step3");]]></script>
+    </scriptTask>
+    <endEvent id="sid-E7F9113F-3DCB-4E8A-9ABF-2332E537BE64"></endEvent>
+    <subProcess id="makepayment" name="subProcess">
+      <startEvent id="s1start1" flowable:formFieldValidation="true"></startEvent>
+      <endEvent id="s1end"></endEvent>
+      <scriptTask id="s1payment" name="Payment" scriptFormat="groovy" flowable:autoStoreVariables="false">
+        <script><![CDATA[System.out.println("@@@@@PAYMENT RECEIVED");]]></script>
+      </scriptTask>
+      <sequenceFlow id="sid-23642F06-0ACD-4857-8963-A186DFF174B6" sourceRef="s1start1" targetRef="s1payment"></sequenceFlow>
+      <sequenceFlow id="sid-797E81E4-7C53-4F01-8010-17541909D024" sourceRef="s1payment" targetRef="s1end"></sequenceFlow>
+    </subProcess>
+    <sequenceFlow id="fromcs3" sourceRef="cstep3" targetRef="makepayment"></sequenceFlow>
+    <parallelGateway id="combine1"></parallelGateway>
+    <sequenceFlow id="fromcombine1" sourceRef="combine1" targetRef="cstep3"></sequenceFlow>
+    <sequenceFlow id="fromps1" sourceRef="pstep1" targetRef="combine1"></sequenceFlow>
+    <sequenceFlow id="fromps2" sourceRef="pstep2" targetRef="combine1"></sequenceFlow>
+    <intermediateCatchEvent id="timer2" name="timer2">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="fromtimer2" sourceRef="timer2" targetRef="sid-E7F9113F-3DCB-4E8A-9ABF-2332E537BE64"></sequenceFlow>
+    <sequenceFlow id="frompsp1" sourceRef="makepayment" targetRef="timer2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_bulkuserupload">
+    <bpmndi:BPMNPlane bpmnElement="bulkuserupload" id="BPMNPlane_bulkuserupload">
+      <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="120.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="manual" id="BPMNShape_manual">
+        <omgdc:Bounds height="80.0" width="100.0" x="250.0" y="83.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="step1" id="BPMNShape_step1">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-314E1402-CDEF-4541-AF91-90DBB7368DC5" id="BPMNShape_sid-314E1402-CDEF-4541-AF91-90DBB7368DC5">
+        <omgdc:Bounds height="80.0" width="100.0" x="555.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="timer1" id="BPMNShape_timer1">
+        <omgdc:Bounds height="31.0" width="31.0" x="435.0" y="234.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallel1" id="BPMNShape_parallel1">
+        <omgdc:Bounds height="40.0" width="40.0" x="720.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pstep1" id="BPMNShape_pstep1">
+        <omgdc:Bounds height="80.0" width="100.0" x="795.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pstep2" id="BPMNShape_pstep2">
+        <omgdc:Bounds height="80.0" width="100.0" x="819.0" y="218.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cstep3" id="BPMNShape_cstep3">
+        <omgdc:Bounds height="80.0" width="100.0" x="1113.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E7F9113F-3DCB-4E8A-9ABF-2332E537BE64" id="BPMNShape_sid-E7F9113F-3DCB-4E8A-9ABF-2332E537BE64">
+        <omgdc:Bounds height="28.0" width="28.0" x="1149.0" y="134.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="makepayment" id="BPMNShape_makepayment">
+        <omgdc:Bounds height="113.0" width="323.0" x="285.0" y="315.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="s1start1" id="BPMNShape_s1start1">
+        <omgdc:Bounds height="30.0" width="30.0" x="315.0" y="356.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="s1end" id="BPMNShape_s1end">
+        <omgdc:Bounds height="28.0" width="28.0" x="551.0" y="356.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="s1payment" id="BPMNShape_s1payment">
+        <omgdc:Bounds height="80.0" width="100.0" x="393.0" y="325.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="combine1" id="BPMNShape_combine1">
+        <omgdc:Bounds height="40.0" width="40.0" x="980.0" y="48.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="timer2" id="BPMNShape_timer2">
+        <omgdc:Bounds height="31.0" width="31.0" x="714.5" y="347.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="fromtimer2" id="BPMNEdge_fromtimer2">
+        <omgdi:waypoint x="744.7791402818868" y="356.3628884329804"></omgdi:waypoint>
+        <omgdi:waypoint x="1150.4665848681539" y="154.22266984405252"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromcombine1" id="BPMNEdge_fromcombine1">
+        <omgdi:waypoint x="1018.9197443181818" y="66.96590909090908"></omgdi:waypoint>
+        <omgdi:waypoint x="1113.0" y="59.1496923076923"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromcs3" id="BPMNEdge_fromcs3">
+        <omgdi:waypoint x="1113.0" y="77.06444521981857"></omgdi:waypoint>
+        <omgdi:waypoint x="574.2928120063191" y="315.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-797E81E4-7C53-4F01-8010-17541909D024" id="BPMNEdge_sid-797E81E4-7C53-4F01-8010-17541909D024">
+        <omgdi:waypoint x="492.9499999999989" y="367.04713114754094"></omgdi:waypoint>
+        <omgdi:waypoint x="551.0098816316328" y="369.4267018332879"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromparallel1" id="BPMNEdge_fromparallel1">
+        <omgdi:waypoint x="749.1865625" y="209.20833333333337"></omgdi:waypoint>
+        <omgdi:waypoint x="814.1512915129151" y="124.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="frompsp1" id="BPMNEdge_frompsp1">
+        <omgdi:waypoint x="607.9499999999998" y="366.65784832451504"></omgdi:waypoint>
+        <omgdi:waypoint x="714.5068251868537" y="363.4630236919779"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="149.94749942620706" y="120.27177421885034"></omgdi:waypoint>
+        <omgdi:waypoint x="249.9999999999994" y="122.09090909090911"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-942CD091-5BE5-425B-BB7F-82C54F576B7B" id="BPMNEdge_sid-942CD091-5BE5-425B-BB7F-82C54F576B7B">
+        <omgdi:waypoint x="466.6490719466957" y="247.39095504867058"></omgdi:waypoint>
+        <omgdi:waypoint x="554.9999999999999" y="229.8926948051948"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromstep1" id="BPMNEdge_fromstep1">
+        <omgdi:waypoint x="654.9499999999999" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="220.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromparallel2" id="BPMNEdge_fromparallel2">
+        <omgdi:waypoint x="755.165999397953" y="224.78087349397592"></omgdi:waypoint>
+        <omgdi:waypoint x="819.0" y="243.40856031128405"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="296.8503937007874" y="162.95"></omgdi:waypoint>
+        <omgdi:waypoint x="293.14566929133855" y="210.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromps2" id="BPMNEdge_fromps2">
+        <omgdi:waypoint x="896.5444736842105" y="218.0"></omgdi:waypoint>
+        <omgdi:waypoint x="991.8380062305296" y="79.80841121495328"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="fromps1" id="BPMNEdge_fromps1">
+        <omgdi:waypoint x="894.9499999999999" y="79.51612903225805"></omgdi:waypoint>
+        <omgdi:waypoint x="981.9767441860465" y="69.9718023255814"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-91982CFD-1E99-4F16-A6EE-3882FB976757" id="BPMNEdge_sid-91982CFD-1E99-4F16-A6EE-3882FB976757">
+        <omgdi:waypoint x="339.95000000000005" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-23642F06-0ACD-4857-8963-A186DFF174B6" id="BPMNEdge_sid-23642F06-0ACD-4857-8963-A186DFF174B6">
+        <omgdi:waypoint x="344.92575923565346" y="370.6385671853157"></omgdi:waypoint>
+        <omgdi:waypoint x="393.0" y="367.8732300884956"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
